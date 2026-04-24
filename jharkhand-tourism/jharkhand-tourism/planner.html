@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Use AI to plan your perfect Jharkhand trip based on your budget and interests.">
+  <title>AI Trip Planner | Jharkhand Tourism</title>
+  <meta property="og:site_name" content="Jharkhand Tourism">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://jharkhandtourism.gov.in/planner">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="images/logo.png">
+</head>
+<body>
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-bar__left">
+        <a href="mailto:info@jharkhandtourism.gov.in">✉ info@jharkhandtourism.gov.in</a>
+        <a href="tel:+916512401070">📞 +91 651-240-1070</a>
+      </div>
+      <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="en">ENG</button>
+        <button class="lang-btn" data-lang="hi">हिंदी</button>
+        <button class="lang-btn" data-lang="mr">मराठी</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header" id="header">
+    <div class="container">
+      <a href="index.html" class="header__logo">
+        <img src="images/logo.png" alt="Jharkhand Tourism Logo">
+        <div class="header__logo-text">
+          <span class="brand" data-i18n="brand">Jharkhand Tourism</span>
+          <span class="tagline" data-i18n="tagline">Explore the Beauty of Nature</span>
+        </div>
+      </a>
+
+      <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+
+      <nav class="nav" id="nav">
+        <ul class="nav__list">
+          <li><a href="index.html" class="nav__link ripple" data-i18n="home">Home</a></li>
+          <li><a href="about.html" class="nav__link ripple" data-i18n="about">About</a></li>
+          <li><a href="hotels.html" class="nav__link ripple" data-i18n="bookHotel">Book My Hotel</a></li>
+          <li><a href="planner.html" class="nav__link active ripple">AI Trip Planner</a></li>
+          <li><a href="contact.html" class="nav__link ripple" data-i18n="contact">Contact Us</a></li>
+        </ul>
+    </div>
+  </header>
+
+  <section class="planner-hero">
+    <div class="container">
+      <h1>Plan Your Jharkhand Trip with AI</h1>
+      <p>Enter your budget and get a complete day-by-day itinerary instantly</p>
+    </div>
+  </section>
+
+  <section class="planner-container">
+    <form class="planner-form" id="plannerForm">
+      <div class="form-group">
+        <label for="location">Your current city</label>
+        <input type="text" id="location" placeholder="e.g. Kolkata, Delhi, Mumbai, Nagpur" required>
+      </div>
+
+      <div class="form-row planner-row">
+        <div class="form-group">
+          <label for="budget">Total budget (₹)</label>
+          <input type="number" id="budget" placeholder="e.g. 12000" min="500" required>
+        </div>
+        <div class="form-group">
+          <label for="days">Number of days</label>
+          <input type="number" id="days" value="3" min="1" max="14" required>
+        </div>
+        <div class="form-group">
+          <label for="travelers">Travelers</label>
+          <input type="number" id="travelers" value="1" min="1" max="20" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Interests (select all that apply)</label>
+        <div class="interest-tags">
+          <button class="tag" type="button" data-value="Nature & Waterfalls">🌊 Waterfalls</button>
+          <button class="tag" type="button" data-value="Temples & Spirituality">🛕 Temples</button>
+          <button class="tag" type="button" data-value="Wildlife & Forests">🐘 Wildlife</button>
+          <button class="tag" type="button" data-value="Adventure Sports">🧗 Adventure</button>
+          <button class="tag" type="button" data-value="Tribal Culture">🥁 Tribal Culture</button>
+          <button class="tag" type="button" data-value="Local Food">🍲 Local Food</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="travelStyle">Travel style</label>
+        <select id="travelStyle">
+          <option value="budget">🎒 Budget — dhabas, shared transport, guesthouses</option>
+          <option value="comfort">🏨 Comfort — mid-range hotels, private cab</option>
+          <option value="luxury">✨ Luxury — resorts, premium experience</option>
+        </select>
+      </div>
+
+      <button class="btn-generate" id="generateBtn" type="submit">
+        Generate My Itinerary →
+      </button>
+
+      <p class="disclaimer">Powered by Groq AI · Costs are estimates · Always verify locally</p>
+    </form>
+
+    <div class="planner-loading" id="plannerLoading" style="display:none">
+      <div class="loader-spinner"></div>
+      <p id="loadingText">Consulting local experts...</p>
+    </div>
+
+    <div class="planner-result" id="plannerResult" style="display:none">
+      <div id="resultContent"></div>
+      <button class="btn-reset" id="resetBtn" type="button">← Plan Another Trip</button>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer" id="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <!-- Brand -->
+        <div class="footer__brand">
+          <div class="brand-name" data-i18n="brand"><span>Jharkhand</span> Tourism</div>
+          <p data-i18n="footerDesc">Explore the majestic waterfalls, ancient temples, lush forests and vibrant tribal culture of Jharkhand.</p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer__links">
+          <h4 data-i18n="quickLinks">Quick Links</h4>
+          <a href="index.html" data-i18n="home">Home</a>
+          <a href="about.html" data-i18n="about">About</a>
+          <a href="hotels.html" data-i18n="bookHotel">Book My Hotel</a>
+          <a href="planner.html">AI Planner</a>
+          <a href="contact.html" data-i18n="contact">Contact Us</a>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer__contact">
+          <h4 data-i18n="contactInfo">Contact Info</h4>
+          <p>📍 Tourism Dept., Nepal House, Ranchi, Jharkhand</p>
+          <p>📞 +91 651-240-1070</p>
+          <p>✉ info@jharkhandtourism.gov.in</p>
+        </div>
+
+        <!-- Feedback Form -->
+        <div class="feedback-form" id="feedbackSection">
+          <h4 data-i18n="feedbackTitle">Send Your Feedback</h4>
+          <form id="feedbackForm">
+            <div class="form-row">
+              <input type="text" name="name" placeholder="Your Name" data-i18n="feedbackName" required>
+              <input type="email" name="email" placeholder="Your Email" data-i18n="feedbackEmail" required>
+            </div>
+            <div class="form-row">
+              <input type="tel" name="phone" placeholder="Phone Number" data-i18n="feedbackPhone">
+              <input type="text" name="subject" placeholder="Subject" data-i18n="feedbackSubject">
+            </div>
+            <textarea name="message" placeholder="Your Message..." data-i18n="feedbackMsg"></textarea>
+            <button type="submit" class="btn btn--primary ripple" data-i18n="feedbackSubmit">Submit Feedback</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p data-i18n="copyright">© 2026 Jharkhand Tourism. College Project. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-helper.js"></script>
+  <script src="js/planner.js"></script>
+</body>
+</html>

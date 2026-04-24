@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Jharkhand Tourism</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="images/logo.png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="admin-page">
+  <div id="adminShell" class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-brand">Jharkhand Admin</div>
+      <div class="admin-identity-bar">
+        <div class="admin-identity-badge">ADMIN PANEL</div>
+        <div id="adminIdentityEmail" class="admin-identity-email">
+          <span id="admin-user-email" style="color:#c9a84c;font-size:0.8rem;"></span>
+        </div>
+      </div>
+      <a href="#" class="admin-nav-link active" data-view="dashboard">Dashboard</a>
+      <a href="#" class="admin-nav-link" data-view="bookings">Bookings</a>
+      <a href="#" class="admin-nav-link" data-view="hotels">Hotels</a>
+      <a href="#" class="admin-nav-link" data-view="users">Users</a>
+    </aside>
+
+    <main class="admin-main">
+      <div id="adminSecurityBanner" class="admin-security-banner">
+        <span>🔒 You are viewing the Admin Panel. This area is restricted.</span>
+        <button id="dismissAdminBanner" class="admin-banner-close" type="button">×</button>
+      </div>
+      <div class="admin-main-header">
+        <h2>Welcome back, Admin 👋</h2>
+        <p id="adminTodayDate"></p>
+      </div>
+      <section id="dashboardView" class="admin-view">
+        <h1>Dashboard</h1>
+        <div class="admin-stats">
+          <div class="admin-stat-card"><h3>Total Bookings</h3><p id="totalBookingsStat">0</p></div>
+          <div class="admin-stat-card"><h3>Pending Bookings</h3><p id="pendingBookingsStat">0</p></div>
+          <div class="admin-stat-card"><h3>Total Users</h3><p id="totalUsersStat">0</p></div>
+          <div class="admin-stat-card"><h3>Total Hotels</h3><p id="totalHotelsStat">0</p></div>
+        </div>
+        <div class="admin-card">
+          <h3>Bookings in Last 30 Days</h3>
+          <canvas id="bookingsChart"></canvas>
+        </div>
+        <div class="admin-card">
+          <h3>Recent Bookings</h3>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>ID</th><th>Name</th><th>Hotel</th><th>Status</th><th>Date</th></tr></thead>
+              <tbody id="recentBookingsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="bookingsView" class="admin-view" style="display:none;">
+        <h1>Bookings</h1>
+        <div class="admin-toolbar">
+          <input id="bookingSearch" class="admin-input" placeholder="Search by name or hotel">
+          <button id="exportCsvBtn" class="btn btn--primary">Export CSV</button>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Booking ID</th><th>Tourist Name</th><th>Hotel</th><th>Place</th><th>Check-in</th><th>Check-out</th><th>Travelers</th><th>Status</th><th>Date</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="bookingsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="hotelsView" class="admin-view" style="display:none;">
+        <h1>Hotels</h1>
+        <div class="admin-toolbar">
+          <button id="addHotelBtn" class="btn btn--primary">Add Hotel</button>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Hotel Name</th><th>Place</th><th>Rating</th><th>Price Range</th><th>Phone</th><th>Active</th><th>Actions</th></tr></thead>
+            <tbody id="hotelsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="usersView" class="admin-view" style="display:none;">
+        <h1>Users</h1>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Email</th><th>Name</th><th>Role</th><th>Joined Date</th><th>Total Bookings</th></tr></thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="hotelModal" class="admin-modal" style="display:none;">
+    <div class="admin-modal-card">
+      <button id="hotelModalClose" class="admin-modal-close" type="button">x</button>
+      <h3>Hotel Details</h3>
+      <form id="hotelForm">
+        <input id="hotelId" type="hidden">
+        <div class="form-group"><label>Hotel Name</label><input id="hotelName" type="text" required></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Place</label>
+            <select id="hotelPlace" required>
+              <option value="">Select place</option>
+              <option>Rajrappa</option><option>Betla</option><option>Deoghar</option><option>Netarhat</option><option>Parasnath</option><option>Hundru Falls</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Rating (1-5)</label><input id="hotelRating" type="number" min="1" max="5" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Min Price</label><input id="hotelMinPrice" type="number" required></div>
+          <div class="form-group"><label>Max Price</label><input id="hotelMaxPrice" type="number" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Phone</label><input id="hotelPhone" type="text" required></div>
+          <div class="form-group"><label>Image URL</label><input id="hotelImage" type="url"></div>
+        </div>
+        <label class="admin-checkbox"><input id="hotelActive" type="checkbox" checked> Active</label>
+        <button type="submit" class="btn btn--primary">Save Hotel</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+  <script src="js/supabase-helper.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const dateEl = document.getElementById("adminTodayDate");
+      if (dateEl) {
+        const now = new Date();
+        dateEl.textContent = now.toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+      }
+
+      const closeBtn = document.getElementById("dismissAdminBanner");
+      if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+          const banner = document.getElementById("adminSecurityBanner");
+          if (banner) banner.style.display = "none";
+        });
+      }
+    });
+  </script>
+</body>
+</html>

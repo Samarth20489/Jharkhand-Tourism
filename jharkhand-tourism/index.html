@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore the untouched beauty of Jharkhand — waterfalls, hills, ancient temples and vibrant tribal heritage. Plan your visit today!">
+  <title>Jharkhand Tourism — Explore the Beauty of Nature</title>
+  <link rel="stylesheet" href="jharkhand-tourism/css/style.css">
+  <link rel="icon" href="jharkhand-tourism/images/logo.png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ── ROOT INDEX PAGE OVERRIDES ── */
+    :root {
+      --navy: #0a1628;
+      --gold: #c9a84c;
+      --gold-light: #f0d48a;
+      --white: #ffffff;
+      --off-white: #f5f6fa;
+    }
+
+    /* TOP BAR */
+    .idx-topbar {
+      background: #060e1c;
+      color: #fff;
+      padding: 8px 0;
+      font-size: .84rem;
+      position: relative;
+      z-index: 1001;
+    }
+    .idx-topbar .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .idx-topbar__left { display: flex; gap: 20px; align-items: center; }
+    .idx-topbar__left a { color: rgba(255,255,255,.7); transition: color .2s; }
+    .idx-topbar__left a:hover { color: var(--gold); }
+    .idx-lang { display: flex; gap: 4px; background: rgba(255,255,255,.1); border-radius: 999px; padding: 3px; }
+    .idx-lang-btn {
+      padding: 4px 13px; border-radius: 999px; cursor: pointer;
+      color: rgba(255,255,255,.7); background: transparent;
+      font-size: .78rem; font-weight: 500; transition: all .2s; border: none;
+    }
+    .idx-lang-btn.active { background: var(--gold); color: var(--navy); }
+    .idx-lang-btn:hover:not(.active) { background: rgba(255,255,255,.15); color: #fff; }
+
+    /* NAVBAR */
+    .idx-header {
+      background: #fff;
+      position: sticky; top: 0; z-index: 1000;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    .idx-header .container {
+      display: flex; justify-content: space-between;
+      align-items: center; padding: 10px 0;
+    }
+    .idx-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .idx-logo img { height: 52px; width: auto; }
+    .idx-logo-text { display: flex; flex-direction: column; }
+    .idx-logo-text .brand { font-size: 1.3rem; font-weight: 800; color: var(--navy); letter-spacing: .4px; }
+    .idx-logo-text .tagline { font-size: .68rem; color: #6b7280; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; }
+    .idx-nav__list { display: flex; gap: 4px; align-items: center; list-style: none; }
+    .idx-nav__link {
+      padding: 9px 18px; border-radius: 999px; font-weight: 600;
+      font-size: .9rem; color: #374151; transition: all .25s; text-decoration: none;
+    }
+    .idx-nav__link:hover, .idx-nav__link.active {
+      background: var(--navy); color: #fff;
+    }
+    .nav-login-btn {
+      background: var(--gold); color: var(--navy) !important;
+      padding: 8px 20px; border-radius: 25px; font-weight: 700;
+      text-decoration: none; transition: background .2s; display: inline-block;
+    }
+    .nav-login-btn:hover { background: #b8962e; }
+    .idx-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 8px; background: none; border: none;
+    }
+    .idx-hamburger span { width: 26px; height: 3px; background: var(--navy); border-radius: 3px; transition: all .3s; display: block; }
+
+    /* HERO */
+    .idx-hero {
+      position: relative; width: 100%; height: 100vh;
+      min-height: 560px; overflow: hidden;
+    }
+    .idx-slide {
+      position: absolute; inset: 0; opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    .idx-slide.active { opacity: 1; }
+    .idx-slide img { width: 100%; height: 100%; object-fit: cover; }
+    .idx-slide-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(10,22,40,.25) 0%, rgba(10,22,40,.55) 50%, rgba(10,22,40,.82) 100%);
+      display: flex; align-items: center; justify-content: center; text-align: center;
+    }
+    .idx-slide-content { color: #fff; padding: 0 20px; max-width: 780px; }
+    .idx-slide-content h1 {
+      font-size: clamp(2.4rem, 5.5vw, 4.2rem); font-weight: 900;
+      text-shadow: 0 2px 20px rgba(0,0,0,.35); margin-bottom: 14px; line-height: 1.1;
+    }
+    .idx-slide-content h1 span { color: var(--gold); }
+    .idx-slide-content p {
+      font-size: clamp(1rem, 2vw, 1.2rem); opacity: .9;
+      max-width: 580px; margin: 0 auto 30px; line-height: 1.7;
+    }
+    .idx-hero-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 36px; background: var(--gold); color: var(--navy);
+      font-weight: 700; font-size: 1rem; border-radius: 999px;
+      text-decoration: none; transition: all .3s;
+      box-shadow: 0 4px 24px rgba(201,168,76,.45);
+    }
+    .idx-hero-btn:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 6px 32px rgba(201,168,76,.55); }
+    .idx-hero-dots {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 10px; z-index: 10;
+    }
+    .idx-dot {
+      width: 11px; height: 11px; border-radius: 50%;
+      background: rgba(255,255,255,.4); cursor: pointer;
+      transition: all .3s; border: 2px solid transparent;
+    }
+    .idx-dot.active { background: var(--gold); border-color: #fff; transform: scale(1.3); }
+    .idx-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+      width: 50px; height: 50px; border-radius: 50%;
+      background: rgba(255,255,255,.15); backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255,255,255,.25); color: #fff;
+      font-size: 1.3rem; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; transition: all .3s;
+    }
+    .idx-arrow:hover { background: rgba(255,255,255,.3); transform: translateY(-50%) scale(1.1); }
+    .idx-arrow--prev { left: 24px; }
+    .idx-arrow--next { right: 24px; }
+
+    /* STATS BAR */
+    .idx-stats {
+      background: var(--navy); padding: 28px 0;
+    }
+    .idx-stats .container {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    }
+    .idx-stat {
+      text-align: center; padding: 10px 20px;
+      border-right: 1px solid rgba(255,255,255,.1);
+    }
+    .idx-stat:last-child { border-right: none; }
+    .idx-stat__num {
+      font-size: 2rem; font-weight: 900; color: var(--gold);
+      font-family: 'Outfit', sans-serif; line-height: 1;
+    }
+    .idx-stat__label { font-size: .82rem; color: rgba(255,255,255,.65); margin-top: 4px; letter-spacing: .5px; }
+
+    /* DESTINATIONS */
+    .idx-section { padding: 80px 0; }
+    .idx-section--alt { background: var(--off-white); }
+    .idx-section-label {
+      font-size: .8rem; text-transform: uppercase; letter-spacing: 3px;
+      color: var(--gold); font-weight: 700; margin-bottom: 8px; display: block;
+    }
+    .idx-section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 800;
+      color: var(--navy); margin-bottom: 48px;
+    }
+    .idx-section-title span { color: var(--gold); }
+    .idx-section-header { text-align: center; }
+    .idx-dest-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 40px;
+    }
+    .idx-dest-card {
+      background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 4px 18px rgba(0,0,0,.08); transition: all .3s;
+      text-decoration: none; color: inherit; display: block;
+      border: 2px solid transparent;
+    }
+    .idx-dest-card:hover {
+      transform: translateY(-7px); box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      border-color: var(--gold);
+    }
+    .idx-dest-card__img { height: 210px; overflow: hidden; position: relative; }
+    .idx-dest-card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+    .idx-dest-card:hover .idx-dest-card__img img { transform: scale(1.08); }
+    .idx-dest-card__badge {
+      position: absolute; top: 14px; left: 14px;
+      background: var(--gold); color: var(--navy);
+      padding: 3px 12px; border-radius: 999px;
+      font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+    }
+    .idx-dest-card__body { padding: 20px; }
+    .idx-dest-card__title { font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .idx-dest-card__desc { font-size: .88rem; color: #6b7280; line-height: 1.6; margin-bottom: 14px; }
+    .idx-dest-card__link { color: var(--gold); font-weight: 700; font-size: .88rem; }
+
+    /* AI PLANNER BANNER */
+    .idx-ai-banner {
+      background: var(--navy); padding: 70px 0; position: relative; overflow: hidden;
+    }
+    .idx-ai-banner::before {
+      content: ''; position: absolute; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(201,168,76,.1) 0%, transparent 70%);
+      border-radius: 50%; top: -150px; right: -100px; pointer-events: none;
+    }
+    .idx-ai-inner {
+      display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: center;
+    }
+    .idx-ai-label {
+      font-size: .78rem; text-transform: uppercase; letter-spacing: 3px;
+      color: var(--gold); font-weight: 700; margin-bottom: 10px; display: block;
+    }
+    .idx-ai-title { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 800; color: #fff; margin-bottom: 12px; }
+    .idx-ai-title span { color: var(--gold); }
+    .idx-ai-sub { color: rgba(255,255,255,.7); font-size: 1rem; line-height: 1.7; margin-bottom: 28px; max-width: 480px; }
+    .idx-ai-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px; background: var(--gold); color: var(--navy);
+      font-weight: 700; border-radius: 999px; text-decoration: none;
+      transition: all .3s; box-shadow: 0 4px 20px rgba(201,168,76,.35);
+    }
+    .idx-ai-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .idx-ai-art {
+      font-size: 5rem; line-height: 1; text-align: center;
+      filter: drop-shadow(0 0 20px rgba(201,168,76,.4));
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+    /* WHY JHARKHAND */
+    .idx-why-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 40px;
+    }
+    .idx-why-card {
+      background: #fff; border-radius: 16px; padding: 32px 28px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.07); text-align: center; transition: all .3s;
+    }
+    .idx-why-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,.12); }
+    .idx-why-icon { font-size: 2.8rem; margin-bottom: 16px; }
+    .idx-why-title { font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .idx-why-desc { font-size: .9rem; color: #6b7280; line-height: 1.7; }
+
+    /* TESTIMONIALS */
+    .idx-testi-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 40px;
+    }
+    .idx-testi-card {
+      background: #fff; border-radius: 16px; padding: 28px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.07); transition: all .3s;
+    }
+    .idx-testi-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.11); }
+    .idx-testi-stars { color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 14px; }
+    .idx-testi-text { font-size: .93rem; color: #374151; line-height: 1.75; margin-bottom: 18px; font-style: italic; }
+    .idx-testi-author { display: flex; align-items: center; gap: 12px; }
+    .idx-testi-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--navy); color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .idx-testi-name { font-weight: 700; color: var(--navy); font-size: .9rem; }
+    .idx-testi-loc { font-size: .8rem; color: #9ca3af; }
+
+    /* FOOTER */
+    .idx-footer { background: var(--navy); color: #fff; padding: 60px 0 0; }
+    .idx-footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; padding-bottom: 48px;
+    }
+    .idx-footer-brand { font-size: 1.4rem; font-weight: 800; margin-bottom: 14px; }
+    .idx-footer-brand span { color: var(--gold); }
+    .idx-footer-desc { color: rgba(255,255,255,.6); font-size: .9rem; line-height: 1.7; margin-bottom: 20px; }
+    .idx-footer-social { display: flex; gap: 10px; }
+    .idx-social-btn {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(255,255,255,.1); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem; transition: all .2s; text-decoration: none;
+    }
+    .idx-social-btn:hover { background: var(--gold); color: var(--navy); }
+    .idx-footer-col h4 { font-size: 1rem; font-weight: 700; color: var(--gold); margin-bottom: 16px; }
+    .idx-footer-col a {
+      display: block; color: rgba(255,255,255,.65); font-size: .88rem;
+      margin-bottom: 10px; text-decoration: none; transition: color .2s;
+    }
+    .idx-footer-col a:hover { color: var(--gold); }
+    .idx-footer-col p { color: rgba(255,255,255,.65); font-size: .88rem; margin-bottom: 10px; }
+    .idx-footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding: 18px 0; text-align: center;
+      color: rgba(255,255,255,.45); font-size: .83rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .idx-dest-grid, .idx-why-grid, .idx-testi-grid { grid-template-columns: repeat(2, 1fr); }
+      .idx-footer-grid { grid-template-columns: 1fr 1fr; }
+      .idx-ai-inner { grid-template-columns: 1fr; }
+      .idx-ai-art { display: none; }
+    }
+    @media (max-width: 768px) {
+      .idx-stats .container { grid-template-columns: repeat(2, 1fr); }
+      .idx-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,.1); }
+      .idx-stat:nth-child(odd) { border-right: 1px solid rgba(255,255,255,.1); }
+      .idx-dest-grid, .idx-why-grid, .idx-testi-grid { grid-template-columns: 1fr; }
+      .idx-footer-grid { grid-template-columns: 1fr; }
+      .idx-nav__list { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: #fff; padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.12); gap: 4px; }
+      .idx-nav__list.open { display: flex; }
+      .idx-header .container { position: relative; }
+      .idx-hamburger { display: flex; }
+      .idx-topbar__left { gap: 10px; font-size: .78rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="idx-topbar">
+    <div class="container">
+      <div class="idx-topbar__left">
+        <a href="mailto:info@jharkhandtourism.gov.in">✉ info@jharkhandtourism.gov.in</a>
+        <a href="tel:+916512401070">📞 +91 651-240-1070</a>
+      </div>
+      <div class="idx-lang">
+        <button class="idx-lang-btn active" data-lang="en">ENG</button>
+        <button class="idx-lang-btn" data-lang="hi">हिंदी</button>
+        <button class="idx-lang-btn" data-lang="mr">मराठी</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="idx-header">
+    <div class="container">
+      <a href="index.html" class="idx-logo">
+        <img src="jharkhand-tourism/images/logo.png" alt="Jharkhand Tourism Logo">
+        <div class="idx-logo-text">
+          <span class="brand">Jharkhand Tourism</span>
+          <span class="tagline">Explore the Beauty of Nature</span>
+        </div>
+      </a>
+      <button class="idx-hamburger" id="idxHamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav>
+        <ul class="idx-nav__list" id="idxNavList">
+          <li><a href="index.html" class="idx-nav__link active">Home</a></li>
+          <li><a href="jharkhand-tourism/about.html" class="idx-nav__link">About</a></li>
+          <li><a href="jharkhand-tourism/hotels.html" class="idx-nav__link">Book My Hotel</a></li>
+          <li><a href="jharkhand-tourism/planner.html" class="idx-nav__link">AI Trip Planner</a></li>
+          <li><a href="jharkhand-tourism/contact.html" class="idx-nav__link">Contact Us</a></li>
+          <li><span id="nav-auth-area"><a href="jharkhand-tourism/login.html" class="nav-login-btn">Login</a></span></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== HERO SLIDER ===== -->
+  <section class="idx-hero" id="idxHero">
+    <div class="idx-slide active">
+      <img src="jharkhand-tourism/images/hero1.png" alt="Netarhat Hills Jharkhand">
+      <div class="idx-slide-overlay">
+        <div class="idx-slide-content">
+          <h1>Discover <span>Jharkhand</span></h1>
+          <p>Explore the untouched beauty of waterfalls, hills, temples &amp; tribal heritage</p>
+          <a href="#destinations" class="idx-hero-btn">Explore Places ↓</a>
+        </div>
+      </div>
+    </div>
+    <div class="idx-slide">
+      <img src="jharkhand-tourism/images/hero2.png" alt="Hundru Falls Jharkhand">
+      <div class="idx-slide-overlay">
+        <div class="idx-slide-content">
+          <h1>Majestic <span>Waterfalls</span></h1>
+          <p>From the thundering Hundru Falls to the serene Dassam — nature's finest spectacles await</p>
+          <a href="jharkhand-tourism/places/hundru-falls.html" class="idx-hero-btn">See Hundru Falls →</a>
+        </div>
+      </div>
+    </div>
+    <div class="idx-slide">
+      <img src="jharkhand-tourism/images/hero3.png" alt="Baidyanath Temple Deoghar">
+      <div class="idx-slide-overlay">
+        <div class="idx-slide-content">
+          <h1>Sacred <span>Pilgrimage</span></h1>
+          <p>Visit Baidyanath Dham — one of the 12 Jyotirlingas — and experience divine spirituality</p>
+          <a href="jharkhand-tourism/places/deoghar.html" class="idx-hero-btn">Visit Deoghar →</a>
+        </div>
+      </div>
+    </div>
+
+    <button class="idx-arrow idx-arrow--prev" id="idxPrev" aria-label="Previous slide">&#10094;</button>
+    <button class="idx-arrow idx-arrow--next" id="idxNext" aria-label="Next slide">&#10095;</button>
+
+    <div class="idx-hero-dots" id="idxDots">
+      <span class="idx-dot active" data-slide="0"></span>
+      <span class="idx-dot" data-slide="1"></span>
+      <span class="idx-dot" data-slide="2"></span>
+    </div>
+  </section>
+
+  <!-- ===== STATS BAR ===== -->
+  <div class="idx-stats">
+    <div class="container">
+      <div class="idx-stat">
+        <div class="idx-stat__num">500+</div>
+        <div class="idx-stat__label">Tourist Places</div>
+      </div>
+      <div class="idx-stat">
+        <div class="idx-stat__num">50+</div>
+        <div class="idx-stat__label">Partner Hotels</div>
+      </div>
+      <div class="idx-stat">
+        <div class="idx-stat__num">10K+</div>
+        <div class="idx-stat__label">Happy Travelers</div>
+      </div>
+      <div class="idx-stat">
+        <div class="idx-stat__num">24/7</div>
+        <div class="idx-stat__label">Support Available</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FEATURED DESTINATIONS ===== -->
+  <section class="idx-section" id="destinations">
+    <div class="container">
+      <div class="idx-section-header">
+        <span class="idx-section-label">Top Destinations</span>
+        <h2 class="idx-section-title">Explore <span>Beautiful Places</span></h2>
+      </div>
+      <div class="idx-dest-grid">
+
+        <a href="jharkhand-tourism/places/betla.html" class="idx-dest-card">
+          <div class="idx-dest-card__img">
+            <img src="jharkhand-tourism/images/betla.png" alt="Betla National Park">
+            <span class="idx-dest-card__badge">Wildlife</span>
+          </div>
+          <div class="idx-dest-card__body">
+            <h3 class="idx-dest-card__title">Betla National Park</h3>
+            <p class="idx-dest-card__desc">Home to wild elephants, tigers and diverse wildlife in the dense forests of Palamau.</p>
+            <span class="idx-dest-card__link">Explore →</span>
+          </div>
+        </a>
+
+        <a href="jharkhand-tourism/places/hundru-falls.html" class="idx-dest-card">
+          <div class="idx-dest-card__img">
+            <img src="jharkhand-tourism/images/hundru.png" alt="Hundru Falls">
+            <span class="idx-dest-card__badge">Waterfall</span>
+          </div>
+          <div class="idx-dest-card__body">
+            <h3 class="idx-dest-card__title">Hundru Falls</h3>
+            <p class="idx-dest-card__desc">A spectacular 98-meter waterfall on the Subarnarekha River, just 45 km from Ranchi.</p>
+            <span class="idx-dest-card__link">Explore →</span>
+          </div>
+        </a>
+
+        <a href="jharkhand-tourism/places/deoghar.html" class="idx-dest-card">
+          <div class="idx-dest-card__img">
+            <img src="jharkhand-tourism/images/deoghar.png" alt="Baidyanath Dham Deoghar">
+            <span class="idx-dest-card__badge">Pilgrimage</span>
+          </div>
+          <div class="idx-dest-card__body">
+            <h3 class="idx-dest-card__title">Baidyanath Dham</h3>
+            <p class="idx-dest-card__desc">One of the 12 sacred Jyotirlingas — a major Hindu pilgrimage destination in Deoghar.</p>
+            <span class="idx-dest-card__link">Explore →</span>
+          </div>
+        </a>
+
+        <a href="jharkhand-tourism/places/netarhat.html" class="idx-dest-card">
+          <div class="idx-dest-card__img">
+            <img src="jharkhand-tourism/images/netarhat.png" alt="Netarhat Hill Station">
+            <span class="idx-dest-card__badge">Hill Station</span>
+          </div>
+          <div class="idx-dest-card__body">
+            <h3 class="idx-dest-card__title">Netarhat</h3>
+            <p class="idx-dest-card__desc">The "Queen of Chotanagpur" at 3,700 ft — famous for breathtaking sunrises and misty valleys.</p>
+            <span class="idx-dest-card__link">Explore →</span>
+          </div>
+        </a>
+
+        <a href="jharkhand-tourism/places/rajrappa.html" class="idx-dest-card">
+          <div class="idx-dest-card__img">
+            <img src="jharkhand-tourism/images/rajrappa.png" alt="Rajrappa Temple">
+            <span class="idx-dest-card__badge">Spiritual</span>
+          </div>
+          <div class="idx-dest-card__body">
+            <h3 class="idx-dest-card__title">Rajrappa Temple</h3>
+            <p class="idx-dest-card__desc">Sacred Chinnamasta Temple at the confluence of Damodar &amp; Bhairavi rivers in Ramgarh.</p>
+            <span class="idx-dest-card__link">Explore →</span>
+          </div>
+        </a>
+
+        <a href="jharkhand-tourism/places/parasnath.html" class="idx-dest-card">
+          <div class="idx-dest-card__img">
+            <img src="jharkhand-tourism/images/parasnath.png" alt="Parasnath Hill">
+            <span class="idx-dest-card__badge">Trekking</span>
+          </div>
+          <div class="idx-dest-card__body">
+            <h3 class="idx-dest-card__title">Parasnath Hill</h3>
+            <p class="idx-dest-card__desc">Jharkhand's highest peak at 1,365 m — a sacred Jain pilgrimage site with a 27-km trek.</p>
+            <span class="idx-dest-card__link">Explore →</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AI PLANNER BANNER ===== -->
+  <section class="idx-ai-banner">
+    <div class="container">
+      <div class="idx-ai-inner">
+        <div>
+          <span class="idx-ai-label">Powered by Groq AI · LLaMA 3.3</span>
+          <h2 class="idx-ai-title">Plan Your Perfect Trip<br>with <span>AI</span></h2>
+          <p class="idx-ai-sub">Enter your budget, travel dates, and interests — get a complete day-by-day Jharkhand itinerary with hotel suggestions, food costs, and local tips instantly.</p>
+          <a href="jharkhand-tourism/planner.html" class="idx-ai-btn">Try AI Planner →</a>
+        </div>
+        <div class="idx-ai-art">🗺️</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHY JHARKHAND ===== -->
+  <section class="idx-section idx-section--alt">
+    <div class="container">
+      <div class="idx-section-header">
+        <span class="idx-section-label">Why Visit</span>
+        <h2 class="idx-section-title">Why <span>Jharkhand?</span></h2>
+      </div>
+      <div class="idx-why-grid">
+        <div class="idx-why-card">
+          <div class="idx-why-icon">🌊</div>
+          <h3 class="idx-why-title">Natural Waterfalls</h3>
+          <p class="idx-why-desc">Over 20 stunning waterfalls including Hundru, Dassam, Jonha and Lodh — the highest in the state at 143 meters.</p>
+        </div>
+        <div class="idx-why-card">
+          <div class="idx-why-icon">🥁</div>
+          <h3 class="idx-why-title">Rich Tribal Culture</h3>
+          <p class="idx-why-desc">Home to 32 tribal communities with unique festivals, Paitkar paintings, Sohrai art, and vibrant folk music traditions.</p>
+        </div>
+        <div class="idx-why-card">
+          <div class="idx-why-icon">🐘</div>
+          <h3 class="idx-why-title">Wildlife &amp; Nature</h3>
+          <p class="idx-why-desc">Betla National Park shelters tigers, wild elephants and leopards across 1,135 sq km of pristine Palamau forests.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="idx-section">
+    <div class="container">
+      <div class="idx-section-header">
+        <span class="idx-section-label">Traveler Reviews</span>
+        <h2 class="idx-section-title">What Tourists <span>Say</span></h2>
+      </div>
+      <div class="idx-testi-grid">
+
+        <div class="idx-testi-card">
+          <div class="idx-testi-stars">★★★★★</div>
+          <p class="idx-testi-text">"Netarhat completely blew my mind. The sunrise from Magnolia Point was the most beautiful thing I've ever seen. The AI planner suggested the perfect 3-day itinerary within my budget!"</p>
+          <div class="idx-testi-author">
+            <div class="idx-testi-avatar">P</div>
+            <div>
+              <div class="idx-testi-name">Priya Sharma</div>
+              <div class="idx-testi-loc">Mumbai, Maharashtra</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="idx-testi-card">
+          <div class="idx-testi-stars">★★★★★</div>
+          <p class="idx-testi-text">"Visited Rajrappa Temple during Navratri — the energy was incredible. The hotel booking was seamless and the WhatsApp support was very helpful. Highly recommend this portal!"</p>
+          <div class="idx-testi-author">
+            <div class="idx-testi-avatar">R</div>
+            <div>
+              <div class="idx-testi-name">Rahul Verma</div>
+              <div class="idx-testi-loc">Patna, Bihar</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="idx-testi-card">
+          <div class="idx-testi-stars">★★★★★</div>
+          <p class="idx-testi-text">"Betla National Park safari was a dream come true — spotted wild elephants and a leopard! The AI trip planner saved us so much time planning. Will definitely visit again."</p>
+          <div class="idx-testi-author">
+            <div class="idx-testi-avatar">A</div>
+            <div>
+              <div class="idx-testi-name">Ananya Das</div>
+              <div class="idx-testi-loc">Kolkata, West Bengal</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="idx-footer">
+    <div class="container">
+      <div class="idx-footer-grid">
+
+        <div>
+          <div class="idx-footer-brand"><span>Jharkhand</span> Tourism</div>
+          <p class="idx-footer-desc">Explore the majestic waterfalls, ancient temples, lush forests and vibrant tribal culture of Jharkhand — the Land of Forests.</p>
+          <div class="idx-footer-social">
+            <a href="#" class="idx-social-btn" aria-label="Facebook">f</a>
+            <a href="#" class="idx-social-btn" aria-label="Instagram">📷</a>
+            <a href="#" class="idx-social-btn" aria-label="Twitter">𝕏</a>
+          </div>
+        </div>
+
+        <div class="idx-footer-col">
+          <h4>Quick Links</h4>
+          <a href="index.html">Home</a>
+          <a href="jharkhand-tourism/about.html">About Jharkhand</a>
+          <a href="jharkhand-tourism/hotels.html">Book My Hotel</a>
+          <a href="jharkhand-tourism/planner.html">AI Trip Planner</a>
+          <a href="jharkhand-tourism/contact.html">Contact Us</a>
+          <a href="jharkhand-tourism/login.html">Login / Sign Up</a>
+        </div>
+
+        <div class="idx-footer-col">
+          <h4>Top Places</h4>
+          <a href="jharkhand-tourism/places/betla.html">Betla National Park</a>
+          <a href="jharkhand-tourism/places/hundru-falls.html">Hundru Falls</a>
+          <a href="jharkhand-tourism/places/deoghar.html">Baidyanath Dham</a>
+          <a href="jharkhand-tourism/places/netarhat.html">Netarhat</a>
+          <a href="jharkhand-tourism/places/rajrappa.html">Rajrappa Temple</a>
+          <a href="jharkhand-tourism/places/parasnath.html">Parasnath Hill</a>
+        </div>
+
+        <div class="idx-footer-col">
+          <h4>Contact Info</h4>
+          <p>📍 Tourism Dept., Nepal House<br>Doranda, Ranchi — 834002</p>
+          <p>📞 +91 651-240-1070</p>
+          <p>✉ info@jharkhandtourism.gov.in</p>
+          <p>🕐 Mon–Fri: 10AM – 5PM</p>
+        </div>
+
+      </div>
+    </div>
+    <div class="idx-footer-bottom">
+      <div class="container">
+        <p>© 2026 Jharkhand Tourism. College Project. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="jharkhand-tourism/js/supabase-helper.js"></script>
+  <script src="jharkhand-tourism/js/auth.js"></script>
+  <script>
+    // Hero Slider
+    (function () {
+      const slides = document.querySelectorAll('.idx-slide');
+      const dots = document.querySelectorAll('.idx-dot');
+      let current = 0;
+      let timer;
+
+      function goTo(n) {
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = (n + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+      }
+
+      function next() { goTo(current + 1); }
+      function prev() { goTo(current - 1); }
+
+      function startAuto() { timer = setInterval(next, 4000); }
+      function resetAuto() { clearInterval(timer); startAuto(); }
+
+      document.getElementById('idxNext').addEventListener('click', () => { next(); resetAuto(); });
+      document.getElementById('idxPrev').addEventListener('click', () => { prev(); resetAuto(); });
+      dots.forEach(d => d.addEventListener('click', () => { goTo(+d.dataset.slide); resetAuto(); }));
+
+      startAuto();
+    })();
+
+    // Hamburger
+    document.getElementById('idxHamburger').addEventListener('click', function () {
+      document.getElementById('idxNavList').classList.toggle('open');
+      this.classList.toggle('open');
+    });
+
+    // Language switcher
+    document.querySelectorAll('.idx-lang-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.idx-lang-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+  </script>
+</body>
+</html>

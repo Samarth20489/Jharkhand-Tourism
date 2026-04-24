@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Hotel — Jharkhand Tourism</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="images/logo.png">
+  <style>
+    /* ── BOOKING PAGE — PREMIUM REDESIGN ── */
+
+    body { background: #f4f6f9; }
+
+    /* ── HERO BANNER ── */
+    .bk-hero {
+      height: 180px;
+      background: linear-gradient(135deg, #0a1628 0%, #1a2f50 100%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .bk-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.03) 0px,
+        rgba(255,255,255,0.03) 1px,
+        transparent 1px,
+        transparent 18px
+      );
+    }
+    .bk-hero__content { position: relative; z-index: 1; }
+    .bk-hero__hotel {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #c9a84c;
+      margin: 0 0 6px;
+      line-height: 1.2;
+    }
+    .bk-hero__place {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      margin: 0 0 10px;
+    }
+    .bk-hero__stars { color: #c9a84c; font-size: 1.1rem; letter-spacing: 3px; }
+
+    /* ── MAIN LAYOUT ── */
+    .bk-main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+      display: grid;
+      grid-template-columns: 1fr 38%;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── FORM CARD ── */
+    .bk-form-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+      padding: 40px;
+    }
+
+    .bk-error {
+      background: #fff0f0;
+      border-left: 4px solid #ef4444;
+      color: #991b1b;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .bk-section-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: #9ca3af;
+      text-transform: uppercase;
+      margin: 32px 0 20px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    .bk-section-label:first-of-type { margin-top: 0; }
+
+    .bk-field { margin-bottom: 18px; }
+    .bk-field label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    .bk-field input,
+    .bk-field textarea {
+      width: 100%;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.95rem;
+      color: #1f2937;
+      background: #fafafa;
+      transition: all 0.2s ease;
+      outline: none;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .bk-field input:focus,
+    .bk-field textarea:focus {
+      border-color: #c9a84c;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(201,168,76,0.12);
+    }
+    .bk-field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .bk-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Date wrapper */
+    .bk-date-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fafafa;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bk-date-wrap:focus-within {
+      border-color: #c9a84c;
+      box-shadow: 0 0 0 4px rgba(201,168,76,0.12);
+    }
+    .bk-date-wrap .bk-cal-icon { color: #c9a84c; font-size: 1.1rem; flex-shrink: 0; }
+    .bk-date-wrap input[type="date"] {
+      border: none;
+      background: transparent;
+      padding: 0;
+      font-size: 0.95rem;
+      color: #1f2937;
+      outline: none;
+      box-shadow: none;
+      width: 100%;
+      cursor: pointer;
+    }
+    .bk-date-wrap input[type="date"]:focus {
+      border: none;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    /* Traveler stepper */
+    .bk-stepper {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      width: fit-content;
+      background: #fafafa;
+    }
+    .bk-stepper button {
+      width: 48px;
+      height: 48px;
+      background: #0a1628;
+      color: #fff;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .bk-stepper button:hover { background: #c9a84c; color: #0a1628; }
+    .bk-stepper input[type="number"] {
+      min-width: 64px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0a1628;
+      padding: 0 8px;
+      border: none;
+      background: transparent;
+      outline: none;
+      box-shadow: none;
+      -moz-appearance: textfield;
+    }
+    .bk-stepper input[type="number"]::-webkit-outer-spin-button,
+    .bk-stepper input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    /* Submit button */
+    .bk-submit-btn {
+      width: 100%;
+      margin-top: 28px;
+      padding: 18px;
+      background: linear-gradient(135deg, #c9a84c 0%, #e0bb6a 100%);
+      color: #0a1628;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(201,168,76,0.35);
+      font-family: inherit;
+    }
+    .bk-submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(201,168,76,0.45);
+    }
+    .bk-submit-btn:active { transform: translateY(0); }
+
+    /* ── SUMMARY CARD ── */
+    .bk-summary-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+      overflow: hidden;
+      position: sticky;
+      top: 100px;
+    }
+    .bk-summary-head {
+      background: #0a1628;
+      padding: 24px 28px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .bk-summary-body { padding: 28px; }
+    .bk-sum-hotel {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0a1628;
+      margin: 0 0 2px;
+    }
+    .bk-sum-place { color: #6b7280; font-size: 0.9rem; margin: 0; }
+    .bk-sum-stars { color: #c9a84c; font-size: 1rem; margin: 10px 0 20px; }
+    .bk-divider { border-top: 1px solid #f0f0f0; margin: 16px 0; }
+
+    .bk-sum-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 0.9rem;
+    }
+    .bk-sum-row .lbl { color: #6b7280; }
+    .bk-sum-row .val { color: #1f2937; font-weight: 600; }
+
+    .bk-sum-row--price { font-size: 0.92rem; }
+
+    .bk-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0 0;
+      border-top: 2px solid #f0f0f0;
+      margin-top: 8px;
+    }
+    .bk-total-row .lbl {
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      color: #374151;
+      text-transform: uppercase;
+    }
+    .bk-total-row .val {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #c9a84c;
+    }
+
+    .bk-wa-btn {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(37,211,102,0.3);
+      box-sizing: border-box;
+    }
+    .bk-wa-btn:hover { background: #1ea855; transform: translateY(-1px); }
+
+    .bk-secure {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 14px;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+    .bk-trust {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 12px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      flex-wrap: wrap;
+    }
+
+    /* ── SUCCESS CARD ── */
+    .bk-success-card {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+      padding: 48px 40px;
+      text-align: center;
+    }
+    .bk-success-card h2 {
+      color: #0a1628;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+    .bk-success-icon {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .bk-success-card #successSummary {
+      text-align: left;
+      background: #f8f9fb;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-size: 0.95rem;
+      color: #374151;
+      line-height: 1.9;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .bk-hero { height: 140px; }
+      .bk-hero__hotel { font-size: 1.4rem; }
+      .bk-hero__place { font-size: 0.9rem; }
+      .bk-main {
+        grid-template-columns: 1fr;
+        padding: 24px 16px 48px;
+        gap: 24px;
+      }
+      .bk-summary-card { position: static; }
+      .bk-form-card { padding: 24px; }
+      .bk-row-2 { grid-template-columns: 1fr; }
+      .bk-success-card { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="header">
+    <div class="container">
+      <a href="index.html" class="header__logo">
+        <img src="images/logo.png" alt="Jharkhand Tourism Logo">
+        <div class="header__logo-text">
+          <span class="brand">Jharkhand Tourism</span>
+          <span class="tagline">Explore the Beauty of Nature</span>
+        </div>
+      </a>
+      <nav class="nav">
+        <ul class="nav__list">
+          <li><a href="index.html" class="nav__link ripple">Home</a></li>
+          <li><a href="about.html" class="nav__link ripple">About</a></li>
+          <li><a href="hotels.html" class="nav__link active ripple">Book My Hotel</a></li>
+          <li><a href="planner.html" class="nav__link ripple">AI Trip Planner</a></li>
+          <li><a href="contact.html" class="nav__link ripple">Contact Us</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO BANNER -->
+  <div class="bk-hero">
+    <div class="bk-hero__content">
+      <h1 class="bk-hero__hotel" id="bookingHotelName">Selected Hotel</h1>
+      <p class="bk-hero__place" id="bookingPlaceName">Jharkhand</p>
+      <div class="bk-hero__stars">★★★★★</div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="bookingLayout">
+    <div class="bk-main">
+
+      <!-- LEFT: FORM CARD -->
+      <div class="bk-form-card">
+        <div id="bookingError" class="bk-error" style="display:none;"></div>
+
+        <form id="bookingForm">
+
+          <p class="bk-section-label">Guest Details</p>
+
+          <div class="bk-field">
+            <label for="fullName">Full Name</label>
+            <input id="fullName" type="text" placeholder="Enter your full name" required>
+          </div>
+
+          <div class="bk-row-2">
+            <div class="bk-field">
+              <label for="email">Email Address</label>
+              <input id="email" type="email" placeholder="you@example.com" required>
+            </div>
+            <div class="bk-field">
+              <label for="phone">Phone Number</label>
+              <input id="phone" type="tel" placeholder="+91 98765 43210" required>
+            </div>
+          </div>
+
+          <p class="bk-section-label">Stay Details</p>
+
+          <div class="bk-row-2">
+            <div class="bk-field">
+              <label>Check-in Date</label>
+              <div class="bk-date-wrap">
+                <span class="bk-cal-icon">📅</span>
+                <input id="checkin" type="date" required>
+              </div>
+            </div>
+            <div class="bk-field">
+              <label>Check-out Date</label>
+              <div class="bk-date-wrap">
+                <span class="bk-cal-icon">📅</span>
+                <input id="checkout" type="date" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="bk-field">
+            <label>No. of Travelers</label>
+            <div class="bk-stepper">
+              <button type="button" id="travelerMinus">−</button>
+              <input id="travelers" type="number" min="1" max="20" value="1" required>
+              <button type="button" id="travelerPlus">+</button>
+            </div>
+          </div>
+
+          <div class="bk-field">
+            <label for="specialRequests">Special Requests</label>
+            <textarea id="specialRequests" placeholder="Any meal preference, room request, accessibility needs, etc."></textarea>
+          </div>
+
+          <button id="submitBookingBtn" class="bk-submit-btn" type="submit">
+            🔒 Confirm Booking →
+          </button>
+
+        </form>
+      </div>
+
+      <!-- RIGHT: SUMMARY CARD -->
+      <aside class="bk-summary-card">
+        <div class="bk-summary-head">Booking Summary</div>
+        <div class="bk-summary-body">
+          <h3 class="bk-sum-hotel" id="summaryHotelName">Selected Hotel</h3>
+          <p class="bk-sum-place" id="summaryPlaceName">Jharkhand</p>
+          <div class="bk-sum-stars">★★★★★</div>
+
+          <div class="bk-divider"></div>
+
+          <div class="bk-sum-row">
+            <span class="lbl">Check-in</span>
+            <span class="val" id="sumCheckIn">-</span>
+          </div>
+          <div class="bk-sum-row">
+            <span class="lbl">Check-out</span>
+            <span class="val" id="sumCheckOut">-</span>
+          </div>
+          <div class="bk-sum-row">
+            <span class="lbl">Nights</span>
+            <span class="val" id="sumNights">0</span>
+          </div>
+          <div class="bk-sum-row">
+            <span class="lbl">Travelers</span>
+            <span class="val" id="sumTravelers">1</span>
+          </div>
+
+          <div class="bk-divider"></div>
+
+          <div class="bk-sum-row bk-sum-row--price">
+            <span class="lbl">Rate / night</span>
+            <span class="val" id="sumRate">₹0</span>
+          </div>
+          <div class="bk-sum-row bk-sum-row--price">
+            <span class="lbl">Subtotal</span>
+            <span class="val" id="sumSubtotal">₹0</span>
+          </div>
+          <div class="bk-sum-row bk-sum-row--price">
+            <span class="lbl">Taxes (12%)</span>
+            <span class="val" id="sumTaxes">₹0</span>
+          </div>
+
+          <div class="bk-total-row">
+            <span class="lbl">Total</span>
+            <span class="val" id="sumTotal">₹0</span>
+          </div>
+
+          <a id="bookingWhatsAppBtn" href="#" class="bk-wa-btn" target="_blank" rel="noopener">
+            💬 Ask on WhatsApp
+          </a>
+
+          <div class="bk-secure">🔒 Secure &amp; Encrypted Booking</div>
+          <div class="bk-trust">
+            <span>✓ Free Cancellation</span>
+            <span>✓ No Hidden Fees</span>
+            <span>✓ Instant Confirm</span>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- SUCCESS CARD -->
+  <div id="bookingSuccess" class="bk-success-card" style="display:none;">
+    <span class="bk-success-icon">🎉</span>
+    <h2>Booking Confirmed!</h2>
+    <p style="color:#6b7280;margin-bottom:0;">Your reservation has been received. We'll be in touch shortly.</p>
+    <div id="successSummary"></div>
+    <a id="waShareBtn" class="bk-wa-btn" target="_blank" rel="noopener" style="max-width:320px;margin:0 auto;">
+      💬 Share on WhatsApp
+    </a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__bottom">
+        <p>© 2026 Jharkhand Tourism. College Project. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-helper.js"></script>
+  <script src="js/booking.js"></script>
+</body>
+</html>

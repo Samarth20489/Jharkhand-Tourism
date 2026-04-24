@@ -1,0 +1,362 @@
+<!-- EXAMPLE: HOTEL BOOKING PAGE WITH SUPABASE INTEGRATION -->
+<!-- This is example code to integrate into your hotels.html -->
+
+<section class="booking-section">
+  <div class="container">
+    <h2>Book Your Hotel Now</h2>
+    <p>Find and reserve the perfect hotel for your Jharkhand adventure</p>
+
+    <!-- Hotel Booking Form -->
+    <form id="hotelBookingForm" class="booking-form">
+      <div class="form-row">
+        <input 
+          type="text" 
+          name="name" 
+          placeholder="Full Name" 
+          required
+        >
+        <input 
+          type="email" 
+          name="email" 
+          placeholder="Email Address" 
+          required
+        >
+      </div>
+
+      <div class="form-row">
+        <input 
+          type="tel" 
+          name="phone" 
+          placeholder="Phone Number" 
+          required
+        >
+        <input 
+          type="text" 
+          name="hotel_name" 
+          placeholder="Hotel Name" 
+          required
+        >
+      </div>
+
+      <div class="form-row">
+        <label>Check-in Date:</label>
+        <input 
+          type="date" 
+          name="check_in" 
+          required
+        >
+      </div>
+
+      <div class="form-row">
+        <label>Check-out Date:</label>
+        <input 
+          type="date" 
+          name="check_out" 
+          required
+        >
+      </div>
+
+      <div class="form-row">
+        <input 
+          type="number" 
+          name="guests" 
+          placeholder="Number of Guests" 
+          min="1" 
+          required
+        >
+        <select name="room_type" required>
+          <option value="">Select Room Type</option>
+          <option value="Single">Single</option>
+          <option value="Double">Double</option>
+          <option value="Deluxe">Deluxe</option>
+          <option value="Suite">Suite</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn--primary">Book Hotel</button>
+    </form>
+  </div>
+</section>
+
+<!-- Add this script to your hotels.html -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('hotelBookingForm');
+  
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        name: form.querySelector('[name="name"]').value,
+        email: form.querySelector('[name="email"]').value,
+        phone: form.querySelector('[name="phone"]').value,
+        hotel_name: form.querySelector('[name="hotel_name"]').value,
+        check_in: form.querySelector('[name="check_in"]').value,
+        check_out: form.querySelector('[name="check_out"]').value,
+        guests: parseInt(form.querySelector('[name="guests"]').value),
+        room_type: form.querySelector('[name="room_type"]').value
+      };
+
+      // Validate dates
+      const checkIn = new Date(formData.check_in);
+      const checkOut = new Date(formData.check_out);
+      
+      if (checkOut <= checkIn) {
+        showToast('Check-out date must be after check-in date', 'error');
+        return;
+      }
+
+      // Submit to Supabase
+      const result = await submitHotelBooking(
+        formData.name,
+        formData.email,
+        formData.phone,
+        formData.hotel_name,
+        formData.check_in,
+        formData.check_out,
+        formData.guests,
+        formData.room_type
+      );
+
+      if (result.success) {
+        showToast('✓ Booking submitted successfully! We will confirm within 24 hours.');
+        form.reset();
+        // Optionally scroll to top or navigate
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        showToast('✗ Error submitting booking: ' + result.error, 'error');
+      }
+    });
+  }
+});
+</script>
+
+<!-- ============================================ -->
+<!-- EXAMPLE: CONTACT PAGE WITH SUPABASE INTEGRATION -->
+<!-- This is example code to integrate into your contact.html -->
+
+<section class="contact-section">
+  <div class="container">
+    <h2>Get In Touch</h2>
+    <p>Have questions? We'd love to hear from you!</p>
+
+    <div class="contact-container">
+      <!-- Contact Info -->
+      <div class="contact-info">
+        <div class="contact-item">
+          <h3>📍 Address</h3>
+          <p>Tourism Department, Nepal House<br>Ranchi, Jharkhand 834001<br>India</p>
+        </div>
+        <div class="contact-item">
+          <h3>📞 Phone</h3>
+          <p>+91 651-240-1070<br>+91 651-240-1071</p>
+        </div>
+        <div class="contact-item">
+          <h3>✉ Email</h3>
+          <p>info@jharkhandtourism.gov.in<br>support@jharkhandtourism.gov.in</p>
+        </div>
+        <div class="contact-item">
+          <h3>🕐 Hours</h3>
+          <p>Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM<br>Sunday: Closed</p>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <form id="contactForm" class="contact-form">
+        <h3>Send us a Message</h3>
+
+        <div class="form-group">
+          <label for="contact-name">Name *</label>
+          <input 
+            type="text" 
+            id="contact-name"
+            name="name" 
+            placeholder="Your Full Name" 
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="contact-email">Email *</label>
+          <input 
+            type="email" 
+            id="contact-email"
+            name="email" 
+            placeholder="your.email@example.com" 
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="contact-phone">Phone</label>
+          <input 
+            type="tel" 
+            id="contact-phone"
+            name="phone" 
+            placeholder="+91 XXXXX XXXXX"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="contact-subject">Subject *</label>
+          <input 
+            type="text" 
+            id="contact-subject"
+            name="subject" 
+            placeholder="What is this about?" 
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="contact-message">Message *</label>
+          <textarea 
+            id="contact-message"
+            name="message" 
+            placeholder="Please tell us more..." 
+            rows="6"
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="btn btn--primary">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Add this script to your contact.html -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('contactForm');
+  
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        name: form.querySelector('[name="name"]').value.trim(),
+        email: form.querySelector('[name="email"]').value.trim(),
+        phone: form.querySelector('[name="phone"]').value.trim(),
+        subject: form.querySelector('[name="subject"]').value.trim(),
+        message: form.querySelector('[name="message"]').value.trim()
+      };
+
+      // Validate
+      if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+      }
+
+      // Submit to Supabase
+      const result = await submitContactMessage(
+        formData.name,
+        formData.email,
+        formData.phone,
+        formData.subject,
+        formData.message
+      );
+
+      if (result.success) {
+        showToast('✓ Message sent successfully! We will reply within 24 hours.');
+        form.reset();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        showToast('✗ Error sending message: ' + result.error, 'error');
+      }
+    });
+  }
+});
+</script>
+
+<!-- ============================================ -->
+<!-- EXAMPLE: GET ALL BOOKINGS (Admin Dashboard) -->
+<!-- This code can be used in an admin panel -->
+
+<script>
+async function displayAllBookings() {
+  const bookings = await getHotelBookings();
+  
+  if (!bookings) {
+    console.log('No bookings found');
+    return;
+  }
+
+  console.table(bookings);
+
+  // Display in a table
+  const table = document.createElement('table');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Hotel</th>
+        <th>Check-in</th>
+        <th>Check-out</th>
+        <th>Guests</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${bookings.map(booking => `
+        <tr>
+          <td>${booking.name}</td>
+          <td>${booking.email}</td>
+          <td>${booking.hotel_name}</td>
+          <td>${booking.check_in_date}</td>
+          <td>${booking.check_out_date}</td>
+          <td>${booking.number_of_guests}</td>
+          <td>${booking.status}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+
+  document.body.appendChild(table);
+}
+
+// Call this function to see all bookings
+// displayAllBookings();
+</script>
+
+<!-- ============================================ -->
+<!-- EXAMPLE: PLACE CARD WITH SUPABASE DATA -->
+
+<script>
+async function loadPlacesFromSupabase() {
+  const places = await getAllPlaces();
+  
+  if (!places) {
+    console.log('No places found');
+    return;
+  }
+
+  const container = document.querySelector('.places-grid');
+  if (!container) return;
+
+  container.innerHTML = places.map(place => `
+    <a href="places/${place.name.toLowerCase()}.html" class="place-card fade-up">
+      <div class="place-card__img">
+        <img src="${place.image_url}" alt="${place.name}">
+        <span class="place-card__badge">${place.category}</span>
+      </div>
+      <div class="place-card__body">
+        <h3 class="place-card__title">${place.name}</h3>
+        <p class="place-card__desc">${place.description}</p>
+        <span class="place-card__link">Explore More →</span>
+      </div>
+    </a>
+  `).join('');
+}
+
+// loadPlacesFromSupabase();
+</script>

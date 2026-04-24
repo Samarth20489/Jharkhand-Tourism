@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Setup - Jharkhand Tourism</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 600px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: #666;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .setup-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .method {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .method:hover {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+
+    .method.active {
+      border-color: #667eea;
+      background: #f8f9ff;
+    }
+
+    .method-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .method-icon {
+      font-size: 24px;
+    }
+
+    .method-desc {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .method-content {
+      display: none;
+    }
+
+    .method.active .method-content {
+      display: block;
+    }
+
+    .steps {
+      background: #f5f5f5;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .step {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .step:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .step-number {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 24px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    .step-text {
+      color: #333;
+      font-size: 14px;
+    }
+
+    .code-block {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 6px;
+      padding: 12px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      overflow-x: auto;
+      border: 1px solid #333;
+    }
+
+    .code-block.sql {
+      color: #ce9178;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      margin-top: 15px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #667eea;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .copy-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .copy-btn:hover {
+      background: #5568d3;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e0e0e0;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .link {
+      color: #667eea;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🗄️ Supabase Setup</h1>
+    <p class="subtitle">Choose a method to set up your database tables</p>
+
+    <div class="success-message" id="successMessage">
+      ✓ SQL copied to clipboard! Paste it in your Supabase SQL Editor.
+    </div>
+
+    <div class="setup-methods">
+      <!-- Method 1: Quickest -->
+      <div class="method active" onclick="selectMethod('method1')">
+        <div class="method-title">
+          <span class="method-icon">⚡</span>
+          <span>Method 1: Quickest (2 minutes)</span>
+        </div>
+        <p class="method-desc">Copy-paste SQL directly in Supabase dashboard</p>
+        
+        <div class="method-content">
+          <div class="steps">
+            <div class="step">
+              <span class="step-number">1</span>
+              <span class="step-text">Go to <span class="link" onclick="openLink('https://app.supabase.com')">Supabase Dashboard</span></span>
+            </div>
+            <div class="step">
+              <span class="step-number">2</span>
+              <span class="step-text">Click <strong>SQL Editor</strong> (left sidebar)</span>
+            </div>
+            <div class="step">
+              <span class="step-number">3</span>
+              <span class="step-text">Click <strong>"New Query"</strong> button</span>
+            </div>
+            <div class="step">
+              <span class="step-number">4</span>
+              <span class="step-text">Paste the SQL below</span>
+            </div>
+            <div class="step">
+              <span class="step-number">5</span>
+              <span class="step-text">Click <strong>"Run"</strong> button</span>
+            </div>
+          </div>
+
+          <div class="code-block sql" id="sqlCode">
+            Loading SQL...
+          </div>
+
+          <div class="button-group">
+            <button class="btn-primary" onclick="copySql()">📋 Copy SQL</button>
+            <button class="btn-secondary" onclick="openLink('https://app.supabase.com')">🔗 Open Supabase</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Method 2: CLI -->
+      <div class="method" onclick="selectMethod('method2')">
+        <div class="method-title">
+          <span class="method-icon">🛠️</span>
+          <span>Method 2: CLI (Advanced)</span>
+        </div>
+        <p class="method-desc">Use Supabase CLI for automated setup</p>
+        
+        <div class="method-content">
+          <div class="warning">
+            ⚠️ Requires Supabase CLI and Node.js installed
+          </div>
+
+          <div class="steps">
+            <div class="step">
+              <span class="step-number">1</span>
+              <span class="step-text">Install CLI: <div class="code-block">npm install -g supabase</div></span>
+            </div>
+            <div class="step">
+              <span class="step-number">2</span>
+              <span class="step-text">Get your <span class="link" onclick="openLink('https://app.supabase.com/account/tokens')">Access Token</span> from Supabase</span>
+            </div>
+            <div class="step">
+              <span class="step-number">3</span>
+              <span class="step-text">Set environment: <div class="code-block">set SUPABASE_ACCESS_TOKEN=your_token_here</div></span>
+            </div>
+            <div class="step">
+              <span class="step-number">4</span>
+              <span class="step-text">Run: <div class="code-block">supabase migration new create_tables</div></span>
+            </div>
+            <div class="step">
+              <span class="step-number">5</span>
+              <span class="step-text">Paste SQL in the migration file and run: <div class="code-block">supabase migration up</div></span>
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="downloadScript()">📥 Download Setup Script</button>
+        </div>
+      </div>
+
+      <!-- Method 3: UI -->
+      <div class="method" onclick="selectMethod('method3')">
+        <div class="method-title">
+          <span class="method-icon">🖱️</span>
+          <span>Method 3: Supabase UI (Easiest)</span>
+        </div>
+        <p class="method-desc">Create tables manually using the dashboard</p>
+        
+        <div class="method-content">
+          <div class="steps">
+            <div class="step">
+              <span class="step-number">1</span>
+              <span class="step-text">Go to <span class="link" onclick="openLink('https://app.supabase.com')">Supabase Dashboard</span></span>
+            </div>
+            <div class="step">
+              <span class="step-number">2</span>
+              <span class="step-text">Click <strong>Table Editor</strong> (left sidebar)</span>
+            </div>
+            <div class="step">
+              <span class="step-number">3</span>
+              <span class="step-text">Click <strong>"Create a new table"</strong></span>
+            </div>
+            <div class="step">
+              <span class="step-number">4</span>
+              <span class="step-text">Create these 4 tables:</span>
+              <ul style="margin-left: 30px; margin-top: 8px; font-size: 13px;">
+                <li>feedback</li>
+                <li>hotel_bookings</li>
+                <li>contact_messages</li>
+                <li>places</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="warning">
+            💡 Recommended: Use Method 1 (copy-paste SQL) - it's faster and creates everything at once!
+          </div>
+
+          <button class="btn-secondary" onclick="openLink('https://app.supabase.com')">Open Supabase Dashboard</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Need help? Check the <span class="link" onclick="openLink('https://supabase.com/docs')">Supabase Documentation</span> or <span class="link" onclick="alert('Read SUPABASE_GUIDE.md in your project')">SUPABASE_GUIDE.md</span>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // SQL content
+    const SQL_CONTENT = `-- SUPABASE TABLE SETUP
+-- Copy and paste this entire code in Supabase SQL Editor
+
+-- 1. CREATE FEEDBACK TABLE
+CREATE TABLE public.feedback (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),
+  subject VARCHAR(255),
+  message TEXT NOT NULL,
+  submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  status VARCHAR(50) DEFAULT 'new',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.feedback ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public to insert feedback" ON public.feedback
+  FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public to read feedback" ON public.feedback
+  FOR SELECT USING (true);
+
+-- 2. CREATE HOTEL BOOKINGS TABLE
+CREATE TABLE public.hotel_bookings (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  hotel_name VARCHAR(255) NOT NULL,
+  check_in_date DATE NOT NULL,
+  check_out_date DATE NOT NULL,
+  number_of_guests INT NOT NULL,
+  room_type VARCHAR(100),
+  booked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  status VARCHAR(50) DEFAULT 'pending',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.hotel_bookings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public to insert bookings" ON public.hotel_bookings
+  FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow users to read own bookings" ON public.hotel_bookings
+  FOR SELECT USING (true);
+
+-- 3. CREATE CONTACT MESSAGES TABLE
+CREATE TABLE public.contact_messages (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),
+  subject VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  status VARCHAR(50) DEFAULT 'new',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public to insert messages" ON public.contact_messages
+  FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public to read messages" ON public.contact_messages
+  FOR SELECT USING (true);
+
+-- 4. CREATE PLACES TABLE
+CREATE TABLE public.places (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  description TEXT NOT NULL,
+  category VARCHAR(100),
+  image_url TEXT,
+  latitude NUMERIC(10, 8),
+  longitude NUMERIC(11, 8),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE public.places ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public to read places" ON public.places
+  FOR SELECT USING (true);
+
+-- 5. INSERT SAMPLE PLACES DATA
+INSERT INTO public.places (name, description, category, latitude, longitude) VALUES
+('Rajrappa Temple', 'Sacred Chinnamasta Temple at the confluence of Damodar & Bhairavi rivers.', 'Spiritual', 23.9333, 84.6333),
+('Betla National Park', 'Home to wild elephants, tigers and diverse wildlife in dense forests.', 'Wildlife', 24.1500, 84.5500),
+('Deoghar', 'One of the 12 Jyotirlingas, a major Hindu pilgrimage destination.', 'Pilgrimage', 24.4833, 87.7833),
+('Netarhat', 'The Queen of Chotanagpur — famous for breathtaking sunrises.', 'Hill Station', 23.4667, 84.6167),
+('Hundru Falls', 'A spectacular 98-meter waterfall near Ranchi amidst lush greenery.', 'Waterfall', 23.1833, 85.3333),
+('Parasnath Hill', 'Jharkhand highest peak and a sacred Jain pilgrimage site.', 'Trekking', 23.9000, 84.9500);
+
+-- 6. CREATE INDEXES
+CREATE INDEX feedback_email_idx ON public.feedback(email);
+CREATE INDEX feedback_submitted_at_idx ON public.feedback(submitted_at);
+CREATE INDEX bookings_email_idx ON public.hotel_bookings(email);
+CREATE INDEX bookings_booked_at_idx ON public.hotel_bookings(booked_at);
+CREATE INDEX contact_email_idx ON public.contact_messages(email);
+
+-- DONE! Your tables are ready to use.`;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('sqlCode').textContent = SQL_CONTENT;
+    });
+
+    function selectMethod(method) {
+      document.querySelectorAll('.method').forEach(m => m.classList.remove('active'));
+      document.querySelector(`[onclick="selectMethod('${method}')"]`).classList.add('active');
+    }
+
+    function copySql() {
+      navigator.clipboard.writeText(SQL_CONTENT).then(() => {
+        const msg = document.getElementById('successMessage');
+        msg.classList.add('show');
+        setTimeout(() => msg.classList.remove('show'), 3000);
+      });
+    }
+
+    function openLink(url) {
+      window.open(url, '_blank');
+    }
+
+    function downloadScript() {
+      const link = document.createElement('a');
+      link.href = 'data:text/plain,' + encodeURIComponent(SQL_CONTENT);
+      link.download = 'supabase-setup.sql';
+      link.click();
+    }
+  </script>
+</body>
+</html>
